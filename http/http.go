@@ -16,7 +16,7 @@ We limit the maximum number of connections per host.
 */
 var (
 	maxIdleConnections = 10         // Max Idle Connections
-	once               sync.Once    // sync so we only setup 1 client
+	once               sync.Once    // sync so we only setup 1 client - some important shit lmao
 	netClient          *http.Client // http client
 )
 
@@ -24,13 +24,15 @@ func NewNetClient() *http.Client {
 	once.Do(func() {
 		// transport configuratin
 		var netTransport = &http.Transport{
-			Proxy:        proxy.TorProxy(),   // rotating IP addresses
+			Proxy:        proxy.TorProxy(),   // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
 			MaxIdleConns: maxIdleConnections, // max idle connections
-			Dial: (&net.Dialer{ // Dialer
+			// Dialer
+			Dial: (&net.Dialer{
 				Timeout: 20 * time.Second, // max dialer timeout
 			}).Dial,
 			TLSHandshakeTimeout: 20 * time.Second, // transport layer security max timeout
 		}
+		// Client
 		netClient = &http.Client{
 			Timeout:   time.Second * 20, // roundtripper timeout
 			Transport: netTransport,     // how our HTTP requests are made
