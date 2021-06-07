@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 // smartProxy initializes and returns a proxy function for use in a Transport
@@ -28,6 +29,8 @@ func SmartProxy() func(*http.Request) (*url.URL, error) {
 // TODO: dockerize and start TOR
 // torProxy initializes and returns a proxy function for use in a Transport
 func TorProxy() func(*http.Request) (*url.URL, error) {
+	// a source of uniformly-distributed pseudo-random
+	rand.Seed(time.Now().UnixNano())
 	// random int
 	num := rand.Intn(0x7fffffff-10000) + 10000
 	// base url localhost for now

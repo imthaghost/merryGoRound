@@ -24,7 +24,7 @@ func NewNetClient() *http.Client {
 	once.Do(func() {
 		// transport configuratin
 		var netTransport = &http.Transport{
-			Proxy:        proxy.TorProxy(),   // default - rotating IP addresses
+			Proxy:        proxy.TorProxy(),   // rotating IP addresses
 			MaxIdleConns: maxIdleConnections, // max idle connections
 			Dial: (&net.Dialer{ // Dialer
 				Timeout: 20 * time.Second, // max dialer timeout
