@@ -1,4 +1,4 @@
-package proxy
+package merrygoround
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 // smartProxy initializes and returns a proxy function for use in a Transport
-func SmartProxy() func(*http.Request) (*url.URL, error) {
+func smartProxy() func(*http.Request) (*url.URL, error) {
 	// base url
 	base := "http://%s:%s@%s"
 	// fill credentials into url
@@ -54,10 +54,12 @@ func SmartProxy() func(*http.Request) (*url.URL, error) {
 	   isolation based on destination port, destination address, or both.
 */
 // torProxy initializes and returns a TOR SOCKS proxy function for use in a Transport
-func TorProxy() func(*http.Request) (*url.URL, error) {
+// TODO: so uhhh what if we run out of available ports on the machine? create a stream manager possibly...
+// TODO: determine if tor socks is even running on machine
+func torProxy() func(*http.Request) (*url.URL, error) {
 	// a source of uniformly-distributed pseudo-random
 	rand.Seed(time.Now().UnixNano())
-	// random int
+	// pseudo-random int value
 	num := rand.Intn(0x7fffffff-10000) + 10000
 	// base url localhost for now
 	base := "socks5://%d:x@127.0.0.1:9050"

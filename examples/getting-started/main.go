@@ -3,17 +3,18 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	ht "merryGoRound/http"
+	mgr "merryGoRound"
+
 	"net/http"
 )
 
 func main() {
 	// create an instance of a new network client
-	client := ht.NewNetClient()
+	client := mgr.NewClient()
 	// check current requesting IP
 	currentIP, err := checkIP(client)
 	if err != nil {
-		fmt.Errorf("Error: %v", err)
+		fmt.Println(err)
 
 	}
 
@@ -21,15 +22,18 @@ func main() {
 
 }
 
-// checkIP will check what is the requesting IP address via an AWS server
+// checkIP returns the IP address of the incoming HTTP request
 func checkIP(client *http.Client) (string, error) {
-	url := "https://checkip.amazonaws.com"
-	res, err := client.Get(url)
-	defer res.Body.Close()
+	awsURL := "https://checkip.amazonaws.com"
+	res, err := client.Get(awsURL)
 	if err != nil {
 		return "", err
 	}
+	defer res.Body.Close()
+
 	body, err := ioutil.ReadAll(res.Body)
+
 	ip := string(body)
+
 	return ip, nil
 }
