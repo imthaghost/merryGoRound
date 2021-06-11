@@ -3,6 +3,7 @@ package merrygoround
 import (
 	"net"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 )
@@ -19,11 +20,11 @@ var (
 	netClient          *http.Client // http client
 )
 
-func NewClient() *http.Client {
+func NewClient(proxy func(*http.Request) (*url.URL, error)) *http.Client {
 	once.Do(func() {
 		// transport configuratin
 		var netTransport = &http.Transport{
-			Proxy:        torProxy(),         // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
+			Proxy:        proxy,              // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
 			MaxIdleConns: maxIdleConnections, // max idle connections
 			// Dialer
 			Dial: (&net.Dialer{
@@ -39,4 +40,8 @@ func NewClient() *http.Client {
 	})
 
 	return netClient
+}
+
+func NewIP(client *http.Client, t *http.Transport) {
+	client.Transport = t
 }

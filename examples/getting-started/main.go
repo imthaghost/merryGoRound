@@ -9,17 +9,31 @@ import (
 )
 
 func main() {
+	// use Tor as our proxy
+	tor := mgr.TorProxy()
 	// create an instance of a new network client
-	client := mgr.NewClient()
+	torClient := mgr.NewClient(tor)
 	// check current requesting IP
-	currentIP, err := checkIP(client)
+	torIP, err := checkIP(torClient)
 	if err != nil {
 		fmt.Println(err)
-
 	}
 
-	fmt.Printf("Current IP: %s", currentIP)
+	fmt.Printf("Tor IP: %s", torIP)
 
+	// use stdlib http client
+	standardClient := &http.Client{}
+	// check current requesting IP
+	standardIP, err := checkIP(standardClient)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("Non proxy IP: %s", standardIP)
+
+	if standardIP != torIP {
+		fmt.Println("Success")
+	}
 }
 
 // checkIP returns the IP address of the incoming HTTP request
