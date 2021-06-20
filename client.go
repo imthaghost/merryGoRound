@@ -20,6 +20,50 @@ var (
 	netClient          *http.Client // http client
 )
 
+func NewTorClient() *http.Client {
+	once.Do(func() {
+		// transport configuratin
+		var netTransport = &http.Transport{
+			Proxy:        TorProxy(),         // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
+			MaxIdleConns: maxIdleConnections, // max idle connections
+			// Dialer
+			Dial: (&net.Dialer{
+				Timeout: 20 * time.Second, // max dialer timeout
+			}).Dial,
+			TLSHandshakeTimeout: 20 * time.Second, // transport layer security max timeout
+		}
+		// Client
+		netClient = &http.Client{
+			Timeout:   time.Second * 20, // roundtripper timeout
+			Transport: netTransport,     // how our HTTP requests are made
+		}
+	})
+
+	return netClient
+}
+
+func NewSmartProxyClient() *http.Client {
+	once.Do(func() {
+		// transport configuratin
+		var netTransport = &http.Transport{
+			Proxy:        SmartProxy(),       // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
+			MaxIdleConns: maxIdleConnections, // max idle connections
+			// Dialer
+			Dial: (&net.Dialer{
+				Timeout: 20 * time.Second, // max dialer timeout
+			}).Dial,
+			TLSHandshakeTimeout: 20 * time.Second, // transport layer security max timeout
+		}
+		// Client
+		netClient = &http.Client{
+			Timeout:   time.Second * 20, // roundtripper timeout
+			Transport: netTransport,     // how our HTTP requests are made
+		}
+	})
+
+	return netClient
+}
+
 func NewClient(proxy func(*http.Request) (*url.URL, error)) *http.Client {
 	once.Do(func() {
 		// transport configuratin
