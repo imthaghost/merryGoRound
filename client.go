@@ -20,6 +20,7 @@ var (
 	netClient          *http.Client // http client
 )
 
+// NewTorClient ...
 func NewTorClient() *http.Client {
 	once.Do(func() {
 		// transport configuratin
@@ -34,7 +35,7 @@ func NewTorClient() *http.Client {
 		}
 		// Client
 		netClient = &http.Client{
-			Timeout:   time.Second * 20, // roundtripper timeout
+			Timeout:   20 * time.Second, // roundtripper timeout
 			Transport: netTransport,     // how our HTTP requests are made
 		}
 	})
@@ -56,7 +57,7 @@ func NewSmartProxyClient() *http.Client {
 		}
 		// Client
 		netClient = &http.Client{
-			Timeout:   time.Second * 20, // roundtripper timeout
+			Timeout:   20 * time.Second, // roundtripper timeout
 			Transport: netTransport,     // how our HTTP requests are made
 		}
 	})
@@ -64,6 +65,7 @@ func NewSmartProxyClient() *http.Client {
 	return netClient
 }
 
+// NewClient ...
 func NewClient(proxy func(*http.Request) (*url.URL, error)) *http.Client {
 	once.Do(func() {
 		// transport configuratin
@@ -78,7 +80,7 @@ func NewClient(proxy func(*http.Request) (*url.URL, error)) *http.Client {
 		}
 		// Client
 		netClient = &http.Client{
-			Timeout:   time.Second * 20, // roundtripper timeout
+			Timeout:   20 * time.Second, // roundtripper timeout
 			Transport: netTransport,     // how our HTTP requests are made
 		}
 	})
@@ -86,6 +88,7 @@ func NewClient(proxy func(*http.Request) (*url.URL, error)) *http.Client {
 	return netClient
 }
 
+// NewIP ...
 func NewIP(client *http.Client, t *http.Transport) {
 	client.Transport = t
 }

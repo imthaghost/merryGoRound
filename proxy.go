@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// TorTransport ...
 func TorTransport() *http.Transport {
 	return &http.Transport{
 		Proxy:        TorProxy(), // tor proxy
