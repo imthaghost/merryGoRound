@@ -1,46 +1,12 @@
-package merrygoround
+package proxy
 
 import (
 	"fmt"
 	"math/rand"
-	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 )
-
-// TorTransport ...
-func TorTransport() *http.Transport {
-	return &http.Transport{
-		Proxy:        TorProxy(), // tor proxy
-		MaxIdleConns: 10,         // max idle connections
-		// Dialer
-		Dial: (&net.Dialer{
-			Timeout: 20 * time.Second, // max dialer timeout
-		}).Dial,
-		TLSHandshakeTimeout: 20 * time.Second, // transport layer security max timeout
-	}
-}
-
-// SmartProxy initializes and returns a proxy function for use in a Transport
-func SmartProxy() func(*http.Request) (*url.URL, error) {
-	// base url
-	base := "http://%s:%s@%s"
-	// fill credentials into url
-	rawUrl := fmt.Sprintf(base, os.Getenv("SMARTPROXY_USERNAME"), os.Getenv("SMARTPROXY_PASSWORD"), os.Getenv("SMARTPROXY_ADDRESS"))
-	// parse proxy url
-	proxyUrl, err := url.Parse(rawUrl)
-	if err != nil {
-		fmt.Println("invalid url to parse when creating proxy transport. err: ", err)
-		return nil
-
-	}
-	// setup proxy transport
-	proxy := http.ProxyURL(proxyUrl)
-
-	return proxy
-}
 
 /*
 		 Separate streams across circuits by connection metadata
@@ -56,7 +22,7 @@ func SmartProxy() func(*http.Request) (*url.URL, error) {
 		 5) The SOCKS username and password, if any.
 		 6) The source address and port for the application.
 
-	   We propose to use 3, 4, and 5 as a backchannel for applications to
+	   We propose to use 3, 4, and 5 as a back channel for applications to
 	   tell Tor about different sessions.  Rather than running only one
 	   SOCKSPort, a Tor user who would prefer better session isolation should
 	   run multiple SOCKSPorts/TransPorts, and configure different
@@ -68,8 +34,8 @@ func SmartProxy() func(*http.Request) (*url.URL, error) {
 	   isolation based on destination port, destination address, or both.
 */
 // torProxy initializes and returns a TOR SOCKS proxy function for use in a Transport
-// TODO: so uhhh what if we run out of available ports on the machine? create a stream manager possibly...
-// TODO: determine if tor socks is even running on machine
+// TODO: what if we run out of available ports on the machine? create a stream manager possibly...
+// TODO: determine if tor socks proxy is running on host machine
 func TorProxy() func(*http.Request) (*url.URL, error) {
 	// a source of uniformly-distributed pseudo-random
 	rand.Seed(time.Now().UnixNano())
@@ -80,19 +46,6 @@ func TorProxy() func(*http.Request) (*url.URL, error) {
 	// proxy url with random credentials
 	rawUrl := fmt.Sprintf(base, num)
 	// parse proxy url
-	proxyUrl, err := url.Parse(rawUrl)
-	if err != nil {
-		fmt.Println("invalid url to parse when creating proxy transport. err: ", err)
-		return nil
-	}
-	// setup proxy transport
-	proxy := http.ProxyURL(proxyUrl)
-
-	return proxy
-}
-
-// CustomProxy ...
-func CustomProxy(rawUrl string) func(*http.Request) (*url.URL, error) {
 	proxyUrl, err := url.Parse(rawUrl)
 	if err != nil {
 		fmt.Println("invalid url to parse when creating proxy transport. err: ", err)
