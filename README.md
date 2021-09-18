@@ -21,19 +21,35 @@ will resolve and add the package to the current development module, along with i
 ## Usage ##
 
 ```go
-import  mgr "github.com/imthaghost/merrygoround"
+package main
+
+import (
+	"io/ioutil"
+	"log"
+	"time"
+	"log"
+	
+	ht "github.com/imthaghost/merryGoRound/pkg/http"
+)
+
+func main() {
+	// Configure a tor client
+	tor := ht.Tor{
+		MaxTimeout:         20 * time.Second,
+		MaxIdleConnections: 10,
+	}
+
+	// new instance of tor client
+	torClient := tor.New()
+
+	// check your IP with AWS
+	res, _ := torClient.Get("https://checkip.amazonaws.com")
+	
+	body, _ := ioutil.ReadAll(res.Body)
+	ip := string(body)
+	
+	log.Printf("IP: %s", ip)
+	
+}
+
 ```
-
-Construct a new merryGoRound client, then use the various services on the client to
-access different parts of the Notion API. For example:
-
-```go
-client := mgr.NewTorClient()
-// check your IP with AWS
-res, err := client.Get("https://checkip.amazonaws.com")
-```
-
-### Integration Tests ###
-
-You can run integration tests from the `test` directory. See the integration tests [README](test/README.md).
-
