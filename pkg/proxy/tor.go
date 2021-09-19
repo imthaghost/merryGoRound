@@ -33,7 +33,7 @@ import (
 	   same circuit.  We allow each port to have its own settings for
 	   isolation based on destination port, destination address, or both.
 */
-// torProxy initializes and returns a TOR SOCKS proxy function for use in a Transport
+// TorProxy initializes and returns a TOR SOCKS proxy function for use in a Transport
 // TODO: what if we run out of available ports on the machine? create a stream manager possibly...
 // TODO: determine if tor socks proxy is running on host machine
 func TorProxy() func(*http.Request) (*url.URL, error) {
