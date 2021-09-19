@@ -10,10 +10,10 @@ import (
 
 // SmartProxyClient ...
 type SmartProxyClient struct {
-	MaxTimeout time.Duration			// Max Timeout
-	MaxIdleConnections int        	// Max Idle Connections
-	once               sync.Once    // sync so we only set up 1 client
-	netClient          *http.Client // http client
+	MaxTimeout         time.Duration // Max Timeout
+	MaxIdleConnections int           // Max Idle Connections
+	once               sync.Once     // sync so we only set up 1 client
+	netClient          *http.Client  // http client
 }
 
 // New ...
@@ -21,7 +21,7 @@ func (s *SmartProxyClient) New() *http.Client {
 	s.once.Do(func() {
 		// transport configuration
 		var netTransport = &http.Transport{
-			Proxy:        proxy.SmartProxy(),       // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
+			Proxy:        proxy.SmartProxy(),   // We can use Tor or Smart Proxy - rotating IP addresses - if nil no proxy is used
 			MaxIdleConns: s.MaxIdleConnections, // max idle connections
 			// Dialer
 			Dial: (&net.Dialer{
